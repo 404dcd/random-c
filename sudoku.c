@@ -18,7 +18,8 @@ int main() {
         if(p=strchr(buf, '\n')){ // check exist newline
             *p = 0;
         } else {
-            scanf("%*[^\n]");scanf("%*c"); // clear upto newline
+            char c;
+            while ((c = getchar()) != EOF && c != '\n'); // clear upto newline
         }
         
         for (int i = 0; i < 9; i++) {
@@ -36,6 +37,7 @@ int main() {
         }
         printf("\n");
     }
+
 
     return 0;
 }
