@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void fillfrominput(int *sudoku) {
+void inputfill(int *sudoku) {
     int row = 0;
     while (row < 9) {
         char buf[10];
@@ -24,11 +24,23 @@ void fillfrominput(int *sudoku) {
             sudoku[(row*9) + i] = buf[i] - 48;
         }
         row++;
-        
-        for (int tmp = 0; tmp < 81; tmp++) {
-            printf("%d ", sudoku[tmp]);
+    }
+    printf("\n");
+}
+
+
+void display(int *sudoku) {
+    for (int i = 0; i < 81; i++) {
+        printf("%d ", sudoku[i]);
+        if (i % 3 == 2) {
+            printf(" ");
         }
-        printf("\n");
+        if (i % 9 == 8) {
+            printf("\n");
+            if (i % 27 == 26) {
+                printf("\n");
+            }
+        }
     }
 }
 
@@ -37,7 +49,9 @@ void fillfrominput(int *sudoku) {
 int main() {
     int sudoku[81];
 
-    fillfrominput(sudoku);
+    inputfill(sudoku);
+
+    display(sudoku);
 
     return 0;
 }
