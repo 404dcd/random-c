@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
+
 void inputfill(int *sudoku) {
     int row = 0;
     while (row < 9) {
@@ -44,6 +45,7 @@ void display(int *sudoku) {
     }
 }
 
+
 int possible(int *sudoku, int pos) {
     int bad = 0;
     int c;
@@ -68,10 +70,43 @@ int possible(int *sudoku, int pos) {
     return ~bad;
 }
 
+
+int solve(int *sudoku, int pos) {
+    int tries = possible(sudoku, pos);
+    int next = -1;
+    for (int c = pos+1; c < 81; c++) {
+        if (!sudoku[c]) {
+            next = c;
+            break;
+        }
+    }
+
+    for (int num = 1; num < 10; num++) {
+        if (tries & ( 1 << num )) {
+            sudoku[pos] = num;
+            if (next == -1) {
+                return 1;
+            }
+            if (solve(sudoku, next)) {
+                return 1;
+            }
+        }
+    }
+    sudoku[pos] = 0;
+    return 0;
+}
+
+
 int main() {
     int sudoku[81];
 
     inputfill(sudoku);
+
+    display(sudoku);
+
+    solve(sudoku, 0);
+
+    printf("\n\n");
 
     display(sudoku);
 
