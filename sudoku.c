@@ -2,13 +2,6 @@
 #include <string.h>
 
 void fillfrominput(int *sudoku) {
-
-}
-
-int main() {
-    int sudoku[81];
-    
-    // FILL ARRAY WITH INPUT
     int row = 0;
     while (row < 9) {
         char buf[10];
@@ -37,7 +30,14 @@ int main() {
         }
         printf("\n");
     }
+}
 
+
+
+int main() {
+    int sudoku[81];
+
+    fillfrominput(sudoku);
 
     return 0;
 }
