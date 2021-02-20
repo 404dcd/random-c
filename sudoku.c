@@ -14,7 +14,7 @@ void inputfill(int *sudoku) {
             char c;
             while ((c = getchar()) != EOF && c != '\n'); // clear upto newline
         }
-        
+
         for (int i = 0; i < 9; i++) {
             if ('0' > buf[i] || buf[i] > '9') {
                 row--;
@@ -44,7 +44,29 @@ void display(int *sudoku) {
     }
 }
 
+int possible(int *sudoku, int pos) {
+    int bad = 0;
+    int c;
+    int startrow = (pos / 9) * 9;
+    for (c = startrow; c < startrow+9; c++) {
+        bad |= 1 << sudoku[c];
+    }
 
+    int startcol = pos % 9;
+    for (c = startcol; c < startcol+81; c+=9) {
+        bad |= 1 << sudoku[c];
+    }
+
+    int sboxc = (startcol / 3) * 3;
+    int sboxr = (startrow / 27) * 27;
+    for (int offset = 0; offset < 27; offset += 9) {
+        int grp = sboxc + sboxr + offset;
+        for (c = grp; c < grp+3; c++) {
+            bad |= 1 << sudoku[c];
+        }
+    }
+    return ~bad;
+}
 
 int main() {
     int sudoku[81];
