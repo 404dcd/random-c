@@ -49,17 +49,17 @@ void display(int *sudoku) {
 int possible(int *sudoku, int pos) {
     int bad = 0;
     int c;
-    int startrow = (pos / 9) * 9;
+    int startrow = (pos / 9) * 9; // checks rows
     for (c = startrow; c < startrow+9; c++) {
         bad |= 1 << sudoku[c];
     }
 
-    int startcol = pos % 9;
+    int startcol = pos % 9; // checks columns
     for (c = startcol; c < startcol+81; c+=9) {
         bad |= 1 << sudoku[c];
     }
 
-    int sboxc = (startcol / 3) * 3;
+    int sboxc = (startcol / 3) * 3; // checks boxes
     int sboxr = (startrow / 27) * 27;
     for (int offset = 0; offset < 27; offset += 9) {
         int grp = sboxc + sboxr + offset;
@@ -74,7 +74,7 @@ int possible(int *sudoku, int pos) {
 int solve(int *sudoku, int pos) {
     int tries = possible(sudoku, pos);
     int next = -1;
-    for (int c = pos+1; c < 81; c++) {
+    for (int c = pos+1; c < 81; c++) { // find the next blank
         if (!sudoku[c]) {
             next = c;
             break;
@@ -82,11 +82,11 @@ int solve(int *sudoku, int pos) {
     }
 
     for (int num = 1; num < 10; num++) {
-        if (tries & ( 1 << num )) {
-            sudoku[pos] = num;
+        if (tries & ( 1 << num )) { // if the number can go here
             if (next == -1) {
                 return 1;
             }
+            sudoku[pos] = num;
             if (solve(sudoku, next)) {
                 return 1;
             }
@@ -98,13 +98,29 @@ int solve(int *sudoku, int pos) {
 
 
 int main() {
-    int sudoku[81];
+    int sudoku[81] = {
+        0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 3, 0, 8, 5,
+        0, 0, 1, 0, 2, 0, 0, 0, 0,
+        0, 0, 0, 5, 0, 7, 0, 0, 0,
+        0, 0, 4, 0, 0, 0, 1, 0, 0,
+        0, 9, 0, 0, 0, 0, 0, 0, 0,
+        5, 0, 0, 0, 0, 0, 0, 7, 3,
+        0, 0, 2, 0, 1, 0, 0, 0, 0,
+        0, 0, 0, 0, 4, 0, 0, 0, 9,
+    };
 
-    inputfill(sudoku);
+//    inputfill(sudoku);
 
     display(sudoku);
 
-    solve(sudoku, 0);
+    int fzero;
+    for (fzero = 0; fzero < 81; fzero++) {
+        if (!sudoku[fzero]) {
+            break;
+        }
+    }
+    solve(sudoku, fzero);
 
     printf("\n\n");
 
