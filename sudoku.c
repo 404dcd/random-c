@@ -32,7 +32,11 @@ void inputfill(int *sudoku) {
 
 void display(int *sudoku) {
     for (int i = 0; i < 81; i++) {
-        printf("%d ", sudoku[i]);
+        if (sudoku[i]) {
+            printf("%d ", sudoku[i]);
+        } else {
+            printf(". ");
+        }
         if (i % 3 == 2) {
             printf(" ");
         }
@@ -83,10 +87,10 @@ int solve(int *sudoku, int pos) {
 
     for (int num = 1; num < 10; num++) {
         if (tries & ( 1 << num )) { // if the number can go here
+            sudoku[pos] = num;
             if (next == -1) {
                 return 1;
             }
-            sudoku[pos] = num;
             if (solve(sudoku, next)) {
                 return 1;
             }
