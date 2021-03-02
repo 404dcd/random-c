@@ -86,7 +86,7 @@ int solve(int *sudoku, int pos) {
     }
 
     for (int num = 1; num < 10; num++) {
-        if (tries & ( 1 << num )) { // if the number can go here
+        if ((tries >> num) & 1) { // if the number can go here
             sudoku[pos] = num;
             if (next == -1) {
                 return 1;
