@@ -66,7 +66,7 @@ int detect(int *board) { // -1 Draw, 0 in play, 1 X win, 2 O win
     return -1;
 }
 
-void AIplay(int *board, int me) { // Under construction
+void AIplay(int *board, int me) {
     for (int i = 0; i < 9; i++) { // Win on this move
         if (!board[i]) {
             board[i] = me;
@@ -96,7 +96,7 @@ void AIplay(int *board, int me) { // Under construction
     }
 
     int rand = time(NULL) % 5;
-    rand *= 2;
+    rand <<= 1;
     int i = rand;
     do {
         if (!board[i]) {
