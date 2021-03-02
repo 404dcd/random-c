@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 
 void clean_stdin(void) {
     int c;
@@ -65,17 +66,53 @@ int detect(int *board) { // -1 Draw, 0 in play, 1 X win, 2 O win
     return -1;
 }
 
-void AIplay(int *board, int player) { // Under construction
-    for (int i = 0; i < 9; i++) {
+void AIplay(int *board, int me) { // Under construction
+    for (int i = 0; i < 9; i++) { // Win on this move
         if (!board[i]) {
-            board[i] = player
-            int res = detect(board);
-            board[i] = 0
-            if res == player {
-                return i
+            board[i] = me;
+            if (detect(board) == me) {
+                return;
             }
+            board[i] = 0;
         }
-    } 
+    }
+
+    int op = me & 1;
+    op++;
+    for (int i = 0; i < 9; i++) { // Block a win next move
+        if (!board[i]) {
+            board[i] = op;
+            if (detect(board) == op) {
+                board[i] = me;
+                return;
+            }
+            board[i] = 0;
+        }
+    }
+
+    if (!board[4]) {
+        board[4] = me;
+        return;
+    }
+
+    int rand = time(NULL) % 5;
+    rand *= 2;
+    int i = rand;
+    do {
+        if (!board[i]) {
+            board[i] = me;
+            return;
+        }
+        i += 2;
+        i %= 10;
+    } while (i != rand);
+
+    for (i = 0; i < 9; i++) {
+        if (!board[i]) {
+            board[i] = me;
+            return;
+        }
+    }
 }
 
 void humanplay(int *board, int player) {
@@ -135,13 +172,13 @@ int main() {
 
     switch (result) {
         case 1:
-            printf("Winner: X\n");
+            printf("\nWinner: X\n");
             break;
         case 2:
-            printf("Winner: O\n");
+            printf("\nWinner: O\n");
             break;
         case -1:
-            printf("Draw.\n");
+            printf("\nDraw.\n");
     }
 
     return 0;
