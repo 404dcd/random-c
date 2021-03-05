@@ -4,8 +4,8 @@
 #include <stdint.h>
 #include <math.h>
 
-const int HEIGHT = 2000;
-const int MAX_ITER = 100;
+const int HEIGHT = 1000;
+const int MAX_ITER = 120;
 
 const long double RE_START = -2;
 const long double RE_END = 1;
@@ -110,9 +110,8 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
 
 /* ----- My own code from here ----- */
 
-pixel_t colour(pixel_t* pixel, double hue) {
-    double hprime = hue * 6.0;
-    uint8_t x = (1.0 - fabs(fmod(hprime, 2.0)-1.0)) * 255.0;
+void colour(pixel_t* pixel, double hprime) {
+    uint8_t x = (1 - fabs(fmod(hprime, 2.0)-1.0)) * 255.0;
     switch ((int)hprime) {
     case 0:
         pixel->green = x;
@@ -143,12 +142,15 @@ pixel_t colour(pixel_t* pixel, double hue) {
 int mandelbrot(long double real, long double imag) {
     long double r = 0;
     long double i = 0;
+    long double rr = 0;
+    long double ii = 0;
     int n = 0;
     long double rtemp;
-    while (r*r + i*i <= 4 && n < MAX_ITER) {
-        rtemp = r*r - i*i + real;
+    while (rr + ii <= 4 && n < MAX_ITER) {
         i = 2*r*i + imag;
-        r = rtemp;
+        r = rr - ii + real;
+        rr = r*r;
+        ii = i*i;
         n++;
     }
     return n;
@@ -163,7 +165,6 @@ int main() {
     int WIDTH = HEIGHT * 1.5;
 
     bitmap_t out;
-    int status;
     out.width = WIDTH;
     out.height = HEIGHT;
     out.pixels = calloc(out.width * out.height, sizeof(pixel_t));
@@ -179,7 +180,7 @@ int main() {
             value = mandelbrot(real, imag);
             if (value < MAX_ITER) {
                 pixel_t* pixel = pixel_at(&out, x, y);
-                colour(pixel, (double)value / (double)MAX_ITER);
+                colour(pixel, ((value*6) / (double)MAX_ITER));
             }
         }
     }
@@ -188,10 +189,9 @@ int main() {
 
     if (save_png_to_file (&out, "image.png")) {
         printf("Error writing file.\n");
-	    status = -1;
     }
 
     free(out.pixels);
 
-    return status;
+    return 0;
 }
