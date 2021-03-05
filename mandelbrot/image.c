@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <math.h>
 
-const int WIDTH = 3000;
-const int HEIGHT = 2000;
+const int HEIGHT = 10000;
 const int MAX_ITER = 100;
 
 const long double RE_START = -2;
@@ -21,7 +21,7 @@ typedef struct
     uint8_t blue;
 }
 pixel_t;
-    
+
 typedef struct
 {
     pixel_t *pixels;
@@ -29,12 +29,12 @@ typedef struct
     size_t height;
 }
 bitmap_t;
-    
+
 static pixel_t * pixel_at (bitmap_t * bitmap, int x, int y)
 {
     return bitmap->pixels + bitmap->width * y + x;
 }
-    
+
 static int save_png_to_file (bitmap_t *bitmap, const char *path)
 {
     FILE * fp;
@@ -87,18 +87,18 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
             *row++ = pixel->blue;
         }
     }
-    
+
     png_init_io (png_ptr, fp);
     png_set_rows (png_ptr, info_ptr, row_pointers);
     png_write_png (png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
 
     status = 0;
-    
+
     for (y = 0; y < bitmap->height; y++) {
         png_free (png_ptr, row_pointers[y]);
     }
     png_free (png_ptr, row_pointers);
-    
+
  png_failure:
  png_create_info_struct_failed:
     png_destroy_write_struct (&png_ptr, &info_ptr);
@@ -108,15 +108,37 @@ static int save_png_to_file (bitmap_t *bitmap, const char *path)
     return status;
 }
 
-static int pix (int value, int max)
-{
-    if (value < 0) {
-        return 0;
-    }
-    return (int) (256.0 *((double) (value)/(double) max));
-}
-
 /* ----- My own code from here ----- */
+
+pixel_t colour(pixel_t* pixel, double hue) {
+    double hprime = hue * 6.0;
+    uint8_t x = (1.0 - fabs(fmod(hprime, 2.0)-1.0)) * 255.0;
+    switch ((int)hprime) {
+    case 0:
+        pixel->green = x;
+        pixel->red = 255;
+        break;
+    case 1:
+        pixel->green = 255;
+        pixel->red = x;
+        break;
+    case 2:
+        pixel->blue = x;
+        pixel->green = 255;
+        break;
+    case 3:
+        pixel->blue = 255;
+        pixel->green = x;
+        break;
+    case 4:
+        pixel->blue = 255;
+        pixel->red = x;
+        break;
+    default:
+        pixel->blue = x;
+        pixel->red = 255;
+    }
+}
 
 int mandelbrot(long double real, long double imag) {
     long double r = 0;
@@ -138,6 +160,7 @@ int main() {
     long double imag;
     int value;
     int index;
+    int WIDTH = HEIGHT * 1.5;
 
     bitmap_t out;
     int status;
@@ -154,10 +177,10 @@ int main() {
             real = RE_START + (x / (long double)WIDTH) * (RE_END - RE_START);
             imag = IM_START + (y / (long double)HEIGHT) * (IM_END - IM_START);
             value = mandelbrot(real, imag);
-            pixel_t* pixel = pixel_at(&out, x, y);
-            pixel->red = pix(value, MAX_ITER);
-            pixel->green = pix(value, MAX_ITER);
-            pixel->blue = pix(value, MAX_ITER);
+            if (value < MAX_ITER) {
+                pixel_t* pixel = pixel_at(&out, x, y);
+                colour(pixel, (double)value / (double)MAX_ITER);
+            }
         }
     }
 
