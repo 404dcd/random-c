@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <math.h>
 
-const int HEIGHT = 6000;
+const int HEIGHT = 2000;
 const int MAX_ITER = 100;
 
 const long double RE_START = -2;
