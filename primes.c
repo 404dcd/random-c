@@ -45,5 +45,12 @@ int main(int argc, char *argv[]) {
         }
         factor++;
     }
+
+    for (i = 0; i < lim; i++) {
+        if (!TestBit(i)) {
+            printf("%lu\n", i);
+        }
+    }
+
     return 0;
 }
